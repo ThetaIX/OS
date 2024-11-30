@@ -9,11 +9,11 @@ namespace ConsoleApp1
 
     class Program
     {
-        private static Mutex mutex = new Mutex();
-        private static string eventData = null; 
-        private static bool eventOccurred = false;
+        private static object _lock = new object();
+        private static bool _eventOccurred = false;
+        private static string _eventData;
 
-        static void Main(string[] args)
+        static void Main()
         {
             Thread producer = new Thread(Producer);
             Thread consumer = new Thread(Consumer);
@@ -27,16 +27,16 @@ namespace ConsoleApp1
 
         static void Producer()
         {
-            for (int i = 1; i <= 10; i++) 
+            for (int i = 0; i < 10; i++) 
             {
                 Thread.Sleep(1000); 
-                mutex.WaitOne();
-
-                eventData = $"Event {i}";
-                eventOccurred = true;
-                Console.WriteLine($"Producer: {eventData} generated");
-
-                mutex.ReleaseMutex();
+                lock (_lock)
+                {
+                    _eventData = $"Event {i + 1}";
+                    _eventOccurred = true;
+                    Console.WriteLine($"Producer: {_eventData} generated");
+                    Monitor.Pulse(_lock);
+                }
             }
         }
 
@@ -44,22 +44,22 @@ namespace ConsoleApp1
         {
             while (true)
             {
-                mutex.WaitOne();
-
-                if (eventOccurred)
+                lock (_lock)
                 {
-                    Thread.Sleep(500);
-                    Console.WriteLine($"Consumer: {eventData} processed");
-                    eventOccurred = false;
-
-                    if (eventData == "Event 10")
+                    while (!_eventOccurred)
                     {
-                        mutex.ReleaseMutex();
+                        Monitor.Wait(_lock);
+                    }
+
+                    Thread.Sleep(500);
+                    Console.WriteLine($"Consumer: {_eventData} processed\n");
+                    _eventOccurred = false;
+
+                    if (_eventData == "Event 10") 
+                    {
                         break;
                     }
                 }
-
-                mutex.ReleaseMutex();
             }
         }
     }
