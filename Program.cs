@@ -9,9 +9,9 @@ namespace ConsoleApp1
 
     class Program
     {
-        private static object _lock = new object();
-        private static bool _eventOccurred = false;
-        private static string _eventData;
+        private static object Lock = new object();
+        private static bool EventOccurred = false;
+        private static string EventData;
 
         static void Main()
         {
@@ -21,6 +21,8 @@ namespace ConsoleApp1
             producer.Start();
             consumer.Start();
 
+            producer.Join();
+            consumer.Join();
         }
 
         static void Producer()
@@ -28,12 +30,12 @@ namespace ConsoleApp1
             for (int i = 0; i < 10; i++) 
             {
                 Thread.Sleep(1000); 
-                lock (_lock)
+                lock (Lock)
                 {
-                    _eventData = $"Event {i + 1}";
-                    _eventOccurred = true;
-                    Console.WriteLine($"Producer: {_eventData} generated");
-                    Monitor.Pulse(_lock);
+                    EventData = $"Event {i + 1}";
+                    EventOccurred = true;
+                    Console.WriteLine($"Producer: {EventData} generated");
+                    Monitor.Pulse(Lock);
                 }
             }
         }
@@ -42,18 +44,18 @@ namespace ConsoleApp1
         {
             while (true)
             {
-                lock (_lock)
+                lock (Lock)
                 {
-                    while (!_eventOccurred)
+                    while (!EventOccurred)
                     {
-                        Monitor.Wait(_lock);
+                        Monitor.Wait(Lock);
                     }
 
                     Thread.Sleep(500);
-                    Console.WriteLine($"Consumer: {_eventData} processed\n");
-                    _eventOccurred = false;
+                    Console.WriteLine($"Consumer: {EventData} processed\n");
+                    EventOccurred = false;
 
-                    if (_eventData == "Event 10") 
+                    if (EventData == "Event 10") 
                     {
                         break;
                     }
