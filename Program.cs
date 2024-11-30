@@ -21,8 +21,6 @@ namespace ConsoleApp1
             producer.Start();
             consumer.Start();
 
-            producer.Join();
-            consumer.Join();
         }
 
         static void Producer()
