@@ -1,0 +1,13 @@
+l3/.Module.symvers.cmd
+l3/.modules.order.cmd
+l3/.tsu_module.ko.cmd
+l3/.tsu_module.mod.cmd
+l3/.tsu_module.mod.o.cmd
+l3/.tsu_module.o.cmd
+l3/Module.symvers
+l3/modules.order
+l3/tsu_module.ko
+l3/tsu_module.mod
+l3/tsu_module.mod.c
+l3/tsu_module.mod.o
+l3/tsu_module.o
