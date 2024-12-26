@@ -11,3 +11,8 @@ l3/tsu_module.mod
 l3/tsu_module.mod.c
 l3/tsu_module.mod.o
 l3/tsu_module.o
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/settings.json
+l2/client
+l2/server

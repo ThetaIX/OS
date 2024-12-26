@@ -12,8 +12,6 @@
 #define SIGCONNUM 3
 #define BUFSIZE 2048
 
-volatile sig_atomic_t sighupReceived = 0;
-
 void handler(int sigNum) {
     printf("SIGHUP received\n");
 }
@@ -94,12 +92,6 @@ int main() {
         if (pselect(max + 1, &readfds, NULL, NULL, NULL, &maskOrig) < 0 && errno != EINTR) {
             perror("pselect failed");
             exit(EXIT_FAILURE);
-        }
-
-        if (sighupReceived) {
-            printf("SIGHUP received\n");
-            sighupReceived = 0;
-            continue;
         }
 
         if (incomingSockFD > 0 && FD_ISSET(incomingSockFD, &readfds)) {
