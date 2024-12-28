@@ -94,9 +94,5 @@ static void __exit tsu_exit(void)
     printk(KERN_INFO "TSULAB: Module unloaded. File /proc/%s removed.\n", PROC_NAME);
     printk(KERN_INFO "Tomsk State University forever!\n");
 }
-
 module_init(tsu_init);
 module_exit(tsu_exit);
-
-
-// через сколько минут стрелки часов выстроятся в одну линию
