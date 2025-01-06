@@ -19,3 +19,4 @@ l2/server
 l2/build/Debug/client.o
 l2/build/Debug/outDebug
 l2/build/Debug/server.o
+l3/test.py

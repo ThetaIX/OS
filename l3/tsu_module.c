@@ -16,7 +16,7 @@ MODULE_DESCRIPTION("TSU kernel module");
 static int calculate_minutes_to_alignment(void) {
     struct timespec64 ts;
     struct tm time;
-    int hour, minute, minute_angle, hour_angle, angle_diff, minutes_to_next_event;
+    int hour, minute, minutes_to_next_event;
 
     ktime_get_real_ts64(&ts);
     time64_to_tm(ts.tv_sec, 0, &time);
@@ -24,35 +24,26 @@ static int calculate_minutes_to_alignment(void) {
     hour = time.tm_hour % 12;
     minute = time.tm_min;
 
-    minute_angle = minute * 6; // Минутная стрелка: 6 градусов за минуту
-    hour_angle = hour * 30 + (minute * 1) / 2; // Часовая стрелка: 30 градусов за час + 0.5 градуса за минуту
+    int relative_speed = 5500; // 5.5 градусов/мин в тысячных долях
+    int minute_angle = minute * 6000; // 6 градусов за минуту
+    int hour_angle = hour * 30000 + (minute * 500); // 30 градусов/час + 0.5 градуса/мин
 
-    angle_diff = minute_angle - hour_angle;
-    if (angle_diff < 0) {
-        angle_diff = -angle_diff; // Преобразуем в положительное значение
+    int angle_diff = hour_angle - minute_angle;
+
+    if (angle_diff == 0 || angle_diff == 180000 || angle_diff == -180000) { return 0; }
+
+    if(angle_diff < 0)
+    {
+        angle_diff += 360000;
     }
-    angle_diff = angle_diff > 180 ? 360 - angle_diff : angle_diff;
 
-    if (angle_diff == 0 || angle_diff == 180) {
-        minutes_to_next_event = 0;
-    } else {
-        minutes_to_next_event = 1;
-        while (1) {
-            minute = (minute + 1) % 60;
-            if (minute == 0) hour = (hour + 1) % 12;
-
-            minute_angle = minute * 6;
-            hour_angle = hour * 30 + (minute * 1) / 2;
-            angle_diff = minute_angle - hour_angle;
-            if (angle_diff < 0) {
-                angle_diff = -angle_diff;
-            }
-            angle_diff = angle_diff > 180 ? 360 - angle_diff : angle_diff;
-
-            if (angle_diff == 0 || angle_diff == 180) break;
-            minutes_to_next_event++;
-        }
+    if (angle_diff > 180000) {
+        angle_diff = 360000 - angle_diff;
     }
+
+    minutes_to_next_event = (int)(angle_diff/relative_speed);
+
+    
     return minutes_to_next_event;
 }
 
