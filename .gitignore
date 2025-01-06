@@ -16,3 +16,6 @@ l3/tsu_module.o
 .vscode/settings.json
 l2/client
 l2/server
+l2/build/Debug/client.o
+l2/build/Debug/outDebug
+l2/build/Debug/server.o
